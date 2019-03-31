@@ -6,11 +6,21 @@ import {
   compose,
   combineReducers,
 } from 'redux'
-import { createEpicMiddleware } from 'redux-observable'
-import { AppState, appReducer } from './reducers/appReducer'
+import { createEpicMiddleware, combineEpics } from 'redux-observable'
+import { create } from 'redux-react-hook'
+import { AppState, appReducer, app } from './reducers/appReducer'
+import { SearchState, searchReducer, search } from './reducers/searchReducer'
+import { DecksState, decksReducer, decks } from './reducers/decksReducer'
+import { searchCardsEpic } from './epics/searchCardsEpic'
+import { SearchActions } from './actions/searchActions'
+import { DecksActions } from './actions/decksAction'
+
+export type Actions = SearchActions | DecksActions
 
 export interface StoreState {
   app: AppState;
+  search: SearchState;
+  decks: DecksState;
 }
 
 declare global {
@@ -20,7 +30,13 @@ declare global {
   }
 }
 
-function configureStore(): Store<StoreState> {
+const initialState: StoreState = {
+  app: app,
+  decks: decks,
+  search: search,
+}
+
+export function makeStore(): Store<StoreState, Actions> {
   const composeEnhancers =
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
@@ -28,16 +44,25 @@ function configureStore(): Store<StoreState> {
 
   const rootReducer: Reducer<StoreState> = combineReducers<StoreState>({
     app: appReducer,
+    decks: decksReducer,
+    search: searchReducer,
   })
+
+  const rootEpic = combineEpics(searchCardsEpic)
 
   const store = createStore(
     rootReducer,
+    initialState,
     composeEnhancers(applyMiddleware(epicMiddleware))
   )
 
-  // epicMiddleware.run()
+  epicMiddleware.run(rootEpic)
 
   return store
 }
 
-export default configureStore
+export const { StoreContext, useDispatch, useMappedState } = create<
+StoreState,
+Actions,
+Store<StoreState, Actions>
+>()

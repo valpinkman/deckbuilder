@@ -4,10 +4,10 @@ export interface AppState {
   name: string;
 }
 
-const initialState = {
+export const app = {
   name: 'Deck Builder',
 }
 
 export const appReducer: Reducer<AppState> = (
-  state: AppState = initialState
+  state: AppState = app
 ): AppState => state
