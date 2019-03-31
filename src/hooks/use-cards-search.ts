@@ -6,12 +6,14 @@ export default function useSearchCards() {
   const [term, setTerm] = useState()
 
   const dispatch = useDispatch()
-  const search = (query: string) => query && dispatch(fetchCards(query))
+  const search = (query: string) => {
+    if (query) dispatch(fetchCards(query))
+  }
   const reset = () => dispatch(searchReset())
 
   useEffect(() => {
     search(term)
   }, [term])
 
-  return { setTerm, reset }
+  return { setTerm, reset, term }
 }

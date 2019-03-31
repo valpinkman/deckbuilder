@@ -8,6 +8,7 @@ import {
   catchError,
   mapTo,
   take,
+  tap,
 } from 'rxjs/operators'
 
 import { searchCardUrl } from '../api/scryfall'
@@ -39,7 +40,9 @@ export const searchCardsEpic = (
   return action$.pipe(
     ofType(FETCH_CARDS),
     debounceTime(500),
-    filter(({ payload }: any) => payload && payload.trim() !== ''),
+    filter(({ payload }) => payload && payload.length > 2),
+    filter(({ payload }) => payload && payload.trim() !== ''),
+    tap(val => console.log('value', val)),
     switchMap(({ payload }) =>
       concat(
         of(searchStart()),

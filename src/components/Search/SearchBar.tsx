@@ -11,7 +11,17 @@ interface Props {
   status?: Status;
 }
 
-const SearchBar = ({ onChange, status }: Props) => (
+interface CloseProps {
+  onClick: () => void;
+}
+
+const Close = ({ onClick }: CloseProps) => (
+  <button type="button" onClick={onClick} className={styles.close}>
+    <span className={styles['close-text']}>x</span>
+  </button>
+)
+
+const SearchBar = ({ onChange, onReset, status }: Props) => (
   <div className={styles.search}>
     <Dr0p height={24} />
     <input
@@ -19,6 +29,9 @@ const SearchBar = ({ onChange, status }: Props) => (
       type="text"
       onChange={evt => onChange(evt.target.value)}
     />
+    {status === 'PENDING' || status === 'SUCCESS' ? (
+      <Close onClick={onReset} />
+    ) : null}
   </div>
 )
 
