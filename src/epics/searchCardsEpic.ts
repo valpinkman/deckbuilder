@@ -7,8 +7,6 @@ import {
   filter,
   catchError,
   mapTo,
-  take,
-  tap,
 } from 'rxjs/operators'
 
 import { searchCardUrl } from '../api/scryfall'
@@ -27,12 +25,12 @@ export const searchCardsEpic = (
   { getJSON }: { getJSON: (url: string) => any }
 ) => {
   const cancel$ = concat(
-    action$.pipe(
-      ofType(SEARCH_CARDS_RESET),
-      take(1)
-    ),
     fromEvent(document, 'keydown').pipe(
       filter((evt: any) => evt.keyCode === 27),
+      mapTo(cancelSearch())
+    ),
+    action$.pipe(
+      ofType(SEARCH_CARDS_RESET),
       mapTo(cancelSearch())
     )
   )
@@ -42,7 +40,6 @@ export const searchCardsEpic = (
     debounceTime(500),
     filter(({ payload }) => payload && payload.length > 2),
     filter(({ payload }) => payload && payload.trim() !== ''),
-    tap(val => console.log('value', val)),
     switchMap(({ payload }) =>
       concat(
         of(searchStart()),

@@ -21,6 +21,7 @@ const Search = () => {
     setTerm('')
     reset()
   }
+
   return (
     <>
       <section className={styles.container}>

@@ -4,8 +4,8 @@ import {
   SearchActions,
   SEARCH_CARDS_START,
   SEARCH_CARDS_SUCCESS,
-  SEARCH_CARDS_RESET,
   SEARCH_CARDS_ERROR,
+  CANCEL_SEARCH,
 } from '../actions/searchActions'
 
 export type Status = 'IDLE' | 'PENDING' | 'SUCCESS' | 'ERROR'
@@ -40,7 +40,8 @@ export const searchReducer: Reducer<SearchState> = (
         cards: action.payload,
       }
     }
-    case SEARCH_CARDS_RESET: {
+
+    case CANCEL_SEARCH: {
       return {
         ...state,
         status: 'IDLE',
