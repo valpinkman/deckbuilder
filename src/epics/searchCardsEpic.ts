@@ -1,6 +1,5 @@
-import { of, concat, fromEvent, race, Observable } from 'rxjs'
-import { ajax } from 'rxjs/ajax'
-import { ofType, Epic } from 'redux-observable'
+import { of, concat, fromEvent, race } from 'rxjs'
+import { ofType } from 'redux-observable'
 import {
   switchMap,
   map,
@@ -8,6 +7,7 @@ import {
   filter,
   catchError,
   mapTo,
+  take,
 } from 'rxjs/operators'
 
 import { searchCardUrl } from '../api/scryfall'
@@ -17,15 +17,23 @@ import {
   FETCH_CARDS,
   searchStart,
   cancelSearch,
+  SEARCH_CARDS_RESET,
 } from '../actions/searchActions'
-import { Actions } from '../store'
 
-export const searchCardsEpic: Epic<Actions, Actions> = (
-  action$: Observable<Actions>
+export const searchCardsEpic = (
+  action$: any,
+  state$: any,
+  { getJSON }: { getJSON: (url: string) => any }
 ) => {
-  const cancel$ = fromEvent(document, 'keydown').pipe(
-    filter((evt: any) => evt.keyCode === 27),
-    mapTo(cancelSearch())
+  const cancel$ = concat(
+    action$.pipe(
+      ofType(SEARCH_CARDS_RESET),
+      take(1)
+    ),
+    fromEvent(document, 'keydown').pipe(
+      filter((evt: any) => evt.keyCode === 27),
+      mapTo(cancelSearch())
+    )
   )
 
   return action$.pipe(
@@ -36,7 +44,7 @@ export const searchCardsEpic: Epic<Actions, Actions> = (
       concat(
         of(searchStart()),
         race(
-          ajax.getJSON(searchCardUrl(payload)).pipe(
+          getJSON(searchCardUrl(payload)).pipe(
             map((val: any) => searchSuccess(val.data)),
             catchError(err => of(searchError(err)))
           ),

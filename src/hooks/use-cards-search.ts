@@ -1,21 +1,17 @@
-import { useState, useCallback, useEffect } from 'react'
-import { useMappedState, StoreState, useDispatch } from '../store'
-import { fetchCards } from '../actions/searchActions'
-import { SearchState } from '../reducers/searchReducer'
+import { useState, useEffect } from 'react'
+import { useDispatch } from '../store'
+import { fetchCards, searchReset } from '../actions/searchActions'
 
 export default function useSearchCards() {
   const [term, setTerm] = useState()
-  const { cards, status }: SearchState = useMappedState(
-    useCallback((state: StoreState) => state.search, [])
-  )
+
   const dispatch = useDispatch()
+  const search = (query: string) => query && dispatch(fetchCards(query))
+  const reset = () => dispatch(searchReset())
 
   useEffect(() => {
-    if (term) {
-      const search = (query: string) => dispatch(fetchCards(query))
-      search(term)
-    }
+    search(term)
   }, [term])
 
-  return { cards, setTerm, status }
+  return { setTerm, reset }
 }

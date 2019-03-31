@@ -1,13 +1,9 @@
 import React, { Component } from 'react'
-import SearchCards from './SearchCards'
+import Search from './Search'
 
 class App extends Component {
   render(): React.ReactNode {
-    return (
-      <>
-        <SearchCards />
-      </>
-    )
+    return <Search />
   }
 }
 

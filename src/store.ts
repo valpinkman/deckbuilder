@@ -14,8 +14,9 @@ import { DecksState, decksReducer, decks } from './reducers/decksReducer'
 import { searchCardsEpic } from './epics/searchCardsEpic'
 import { SearchActions } from './actions/searchActions'
 import { DecksActions } from './actions/decksAction'
+import { ajax } from 'rxjs/ajax'
 
-export type Actions = SearchActions | DecksActions
+export type Actions = SearchActions
 
 export interface StoreState {
   app: AppState;
@@ -40,7 +41,9 @@ export function makeStore(): Store<StoreState, Actions> {
   const composeEnhancers =
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
-  const epicMiddleware = createEpicMiddleware()
+  const epicMiddleware = createEpicMiddleware({
+    dependencies: { getJSON: ajax.getJSON },
+  })
 
   const rootReducer: Reducer<StoreState> = combineReducers<StoreState>({
     app: appReducer,

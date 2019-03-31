@@ -8,8 +8,10 @@ import {
   SEARCH_CARDS_ERROR,
 } from '../actions/searchActions'
 
+export type Status = 'IDLE' | 'PENDING' | 'SUCCESS' | 'ERROR'
+
 export interface SearchState {
-  status: 'IDLE' | 'PENDING' | 'SUCCESS' | 'ERROR';
+  status: Status;
   cards: Card[];
   error: Error | null;
 }
